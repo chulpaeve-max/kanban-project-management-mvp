@@ -22,4 +22,24 @@ describe("moveCard", () => {
     expect(result[0].cardIds).toEqual(["card-2"]);
     expect(result[1].cardIds).toEqual(["card-3", "card-1"]);
   });
+
+  it("moves card to empty column", () => {
+    const columnsWithEmpty: Column[] = [
+      { id: "col-a", title: "A", cardIds: ["card-1"] },
+      { id: "col-b", title: "B", cardIds: [] },
+    ];
+    const result = moveCard(columnsWithEmpty, "card-1", "col-b");
+    expect(result[0].cardIds).toEqual([]);
+    expect(result[1].cardIds).toEqual(["card-1"]);
+  });
+
+  it("moves card back to now-empty original column", () => {
+    const columnsAfterMove: Column[] = [
+      { id: "col-a", title: "A", cardIds: [] },
+      { id: "col-b", title: "B", cardIds: ["card-1"] },
+    ];
+    const result = moveCard(columnsAfterMove, "card-1", "col-a");
+    expect(result[0].cardIds).toEqual(["card-1"]);
+    expect(result[1].cardIds).toEqual([]);
+  });
 });

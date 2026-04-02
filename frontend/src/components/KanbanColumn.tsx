@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 import type { Card, Column } from "@/lib/kanban";
 import { KanbanCard } from "@/components/KanbanCard";
 import { NewCardForm } from "@/components/NewCardForm";
@@ -20,14 +20,16 @@ export const KanbanColumn = ({
   onAddCard,
   onDeleteCard,
 }: KanbanColumnProps) => {
-  const { setNodeRef, isOver } = useDroppable({ id: column.id });
+  const { setNodeRef, isOver } = useDroppable({
+    id: column.id,
+  });
 
   return (
     <section
       ref={setNodeRef}
       className={clsx(
         "flex min-h-[520px] flex-col rounded-3xl border border-[var(--stroke)] bg-[var(--surface-strong)] p-4 shadow-[var(--shadow)] transition",
-        isOver && "ring-2 ring-[var(--accent-yellow)]"
+        isOver && "border-[var(--primary-blue)] bg-blue-50/50"
       )}
       data-testid={`column-${column.id}`}
     >
@@ -58,7 +60,9 @@ export const KanbanColumn = ({
           ))}
         </SortableContext>
         {cards.length === 0 && (
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-[var(--stroke)] px-3 py-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[var(--gray-text)]">
+          <div 
+            className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-[var(--stroke)] px-3 py-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[var(--gray-text)]"
+          >
             Drop a card here
           </div>
         )}

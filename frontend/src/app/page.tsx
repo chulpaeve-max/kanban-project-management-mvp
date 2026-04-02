@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { LoginForm } from "@/components/LoginForm";
+import { ChatSidebar } from "@/components/ChatSidebar";
 import { isAuthenticated, logout } from "@/lib/auth";
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     setAuthenticated(isAuthenticated());
@@ -21,6 +23,10 @@ export default function Home() {
   const handleLogout = async () => {
     await logout();
     setAuthenticated(false);
+  };
+
+  const handleBoardUpdate = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   if (loading) {
@@ -41,7 +47,8 @@ export default function Home() {
           Logout
         </button>
       </div>
-      <KanbanBoard />
+      <KanbanBoard refreshTrigger={refreshTrigger} />
+      <ChatSidebar onBoardUpdate={handleBoardUpdate} />
     </div>
   );
 }
