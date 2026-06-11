@@ -35,13 +35,13 @@ EXPOSE 8000
 # Set PYTHONPATH to include backend directory
 ENV PYTHONPATH=/app/backend
 
-# Create startup script
+# Create startup script that always initializes database
 RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "Creating data directory..."\n\
 mkdir -p /app/data\n\
-if [ ! -f /app/data/kanban.db ]; then\n\
-  echo "Initializing database..."\n\
-  cd /app/backend && python init_db.py\n\
-fi\n\
+echo "Initializing database..."\n\
+cd /app/backend && python init_db.py\n\
 echo "Starting server..."\n\
 cd /app/backend && uvicorn main:app --host 0.0.0.0 --port 8000\n\
 ' > /app/start.sh && chmod +x /app/start.sh
