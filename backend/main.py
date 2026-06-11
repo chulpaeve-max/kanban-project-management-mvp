@@ -33,6 +33,23 @@ from prompts import get_system_prompt, format_conversation_history
 
 app = FastAPI(title="Kanban Studio API")
 
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database on application startup."""
+    print("=" * 50)
+    print("APPLICATION STARTUP")
+    print("=" * 50)
+    try:
+        from init_db import init_database
+        init_database()
+        print("Database initialization completed successfully")
+    except Exception as e:
+        print(f"ERROR during database initialization: {e}")
+        import traceback
+        traceback.print_exc()
+    print("=" * 50)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -118,7 +135,6 @@ async def rename_column(column_id: int, request: UpdateColumnRequest, user = Dep
 
 @app.post("/api/cards", response_model=CardSchema)
 async def create_card(request: CreateCardRequest, user = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Get max position for the column
     from models import Card
     max_position = db.query(Card).filter(Card.column_id == request.column_id).count()
     card = crud.create_card(db, request.column_id, request.title, request.details, max_position)
@@ -140,15 +156,9 @@ async def delete_card(card_id: int, user = Depends(get_current_user), db: Sessio
 
 @app.put("/api/cards/{card_id}/move", response_model=CardSchema)
 async def move_card(card_id: int, request: MoveCardRequest, user = Depends(get_current_user), db: Session = Depends(get_db)):
-    print(f"🌐 [API] PUT /api/cards/{card_id}/move - user: {user.username}")
-    print(f"📥 [API] Request: target_column_id={request.target_column_id}, position={request.position}")
-    
     card = crud.move_card(db, card_id, request.target_column_id, request.position)
     if not card:
-        print(f"❌ [API] Card not found or move failed")
         raise HTTPException(status_code=404, detail="Card not found")
-    
-    print(f"✅ [API] Move successful, returning card: {card.id}")
     return card
 
 @app.post("/api/ai/test", response_model=TestAIResponse)
