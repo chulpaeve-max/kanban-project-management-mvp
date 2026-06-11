@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: kanban-studio
+    runtime: docker
+    repo: https://github.com/chulpaeve-max/kanban-project-management-mvp
+    region: oregon
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+    healthCheckPath: /api/health
